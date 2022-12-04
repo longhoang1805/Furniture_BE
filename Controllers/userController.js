@@ -37,14 +37,10 @@ const signUp = async (req, res) => {
 }
 
 const generateToken = (payload) => {
-  const { id, email, phone, RoleId } = payload
-  const accessToken = sign(
-    { id, email, phone, RoleId },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: '30 days',
-    }
-  )
+  const { id, email, phone, role } = payload
+  const accessToken = sign({ id, email, phone, role }, process.env.JWT_SECRET, {
+    expiresIn: '30 days',
+  })
   const refreshToken = sign({ id }, 'shhhh', {
     expiresIn: '45 days',
   })
