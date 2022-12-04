@@ -13,7 +13,7 @@ router.delete('/:id', verifyToken, isAdmin, userController.deleteUser)
 router.get('/search', verifyToken, isAdmin, userController.searchUser)
 
 //Test railway
-router.get('/railway', verifyToken, isAdmin, userController.showAllUser)
+router.get('/railway', userController.showAllUser)
 
 //Customer side
 router.put('/update/:id', verifyToken, userController.updateUser)
