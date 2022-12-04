@@ -2,7 +2,7 @@ const express = require('express')
 const md5 = require('md5')
 const setAssociation = require('./Models/association')
 const app = express()
-const userRouter = require('./routers/user.router')
+const userRouter = require('./Routers/user.router')
 var cors = require('cors')
 app.use(cors())
 
