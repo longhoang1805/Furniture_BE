@@ -6,6 +6,10 @@ const userRouter = require('./Routers/user.router')
 var cors = require('cors')
 app.use(cors())
 
+app.get('/', (req, res) => {
+  return res.status(200).json({ msg: 'Hello world!' })
+})
+
 app.get('/create-database', (req, res) => {
   setAssociation()
   return res.status(200).json({ msg: 'Create database successfully!' })
