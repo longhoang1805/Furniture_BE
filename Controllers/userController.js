@@ -75,7 +75,7 @@ const signIn = async (req, res) => {
 
 const showAllUser = async (req, res) => {
   try {
-    const allUsers = await User.findAll({ where: { RoleId: 1 } })
+    const allUsers = await User.findAll({ where: { role: 1 } })
     return res.status(200).json(allUsers)
   } catch (error) {
     return res.status(500).json({ msg: 'Server err' })
