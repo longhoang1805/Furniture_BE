@@ -4,6 +4,8 @@ const User = require('../Models/User')
 const { sign } = require('jsonwebtoken')
 const Role = require('../Models/Role')
 require('dotenv').config()
+const { verify } = require('jsonwebtoken')
+
 const signUp = async (req, res) => {
   const { firstName, lastName, address, email, phone, password } = req.body
 
@@ -154,6 +156,37 @@ const getUserById = async (req, res) => {
   }
 }
 
+const validateToken = async (req, res) => {
+  const inputToken = req.headers['x-accesstoken']
+  try {
+    const dataObj = verify(inputToken, process.env.JWT_SECRET)
+    const currentUser = await User.findOne({
+      attributes: [
+        'id',
+        'first_name',
+        'last_name',
+        'role',
+        'address',
+        'email',
+        'phone',
+      ],
+      where: {
+        id: dataObj.id,
+        email: dataObj.email,
+        phone: dataObj.phone,
+      },
+    })
+    if (currentUser) {
+      req.user = currentUser
+      return res.status(200).json(currentUser)
+    }
+    //not exist
+    return res.status(403).json({ msg: 'Forbidden!' })
+  } catch (error) {
+    return res.status(401).json({ msg: 'Server error' })
+  }
+}
+
 module.exports = {
   signUp,
   signIn,
@@ -162,4 +195,5 @@ module.exports = {
   deleteUser,
   searchUser,
   getUserById,
+  validateToken,
 }
