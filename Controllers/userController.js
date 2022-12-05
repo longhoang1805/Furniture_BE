@@ -140,6 +140,20 @@ const searchUser = async (req, res) => {
   }
 }
 
+const getUserById = async (req, res) => {
+  const { id } = req.params
+  try {
+    const userById = await User.findOne({
+      where: {
+        id: id,
+      },
+    })
+    return res.status(200).json(userById)
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
 module.exports = {
   signUp,
   signIn,
@@ -147,4 +161,5 @@ module.exports = {
   updateUser,
   deleteUser,
   searchUser,
+  getUserById,
 }

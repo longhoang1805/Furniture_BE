@@ -8,8 +8,11 @@ router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
 //Admin side
-router.get('/all-users', verifyToken, isAdmin, userController.showAllUser)
-router.delete('/:id', verifyToken, isAdmin, userController.deleteUser)
+// router.get('/', verifyToken, isAdmin, userController.showAllUser)
+router.get('/', userController.showAllUser)
+router.get('/:id', verifyToken, isAdmin, userController.getUserById)
+// router.delete('/:id', verifyToken, isAdmin, userController.deleteUser)
+router.delete('/:id', userController.deleteUser)
 router.get('/search', verifyToken, isAdmin, userController.searchUser)
 
 //Test railway
