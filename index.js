@@ -6,6 +6,7 @@ const userRouter = require('./Routers/user.router')
 const orderRouter = require('./Routers/order.router')
 const categoryRouter = require('./Routers/category.router')
 const commentRouter = require('./Routers/comment.router')
+const dataRouter = require('./Routers/data.router')
 
 var cors = require('cors')
 app.use(cors())
@@ -30,6 +31,8 @@ app.use('/api/v1/users', userRouter)
 app.use('/api/v1/orders', orderRouter)
 app.use('/api/v1/categories', categoryRouter)
 app.use('/api/v1/comments', commentRouter)
+
+app.use('/api/v1/data', dataRouter)
 
 const port = 8080
 
