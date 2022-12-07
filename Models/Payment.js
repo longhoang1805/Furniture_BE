@@ -10,7 +10,7 @@ const Payment = connection.define(
       allowNull: false,
       autoIncrement: true,
     },
-    total_price: {
+    totalPrice: {
       type: DataTypes.INTEGER,
     },
   },

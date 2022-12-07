@@ -3,6 +3,10 @@ const md5 = require('md5')
 const setAssociation = require('./Models/association')
 const app = express()
 const userRouter = require('./Routers/user.router')
+const orderRouter = require('./Routers/order.router')
+const categoryRouter = require('./Routers/category.router')
+const commentRouter = require('./Routers/comment.router')
+
 var cors = require('cors')
 app.use(cors())
 
@@ -14,14 +18,18 @@ app.get('/create-database', (req, res) => {
   setAssociation()
   return res.status(200).json({ msg: 'Create database successfully!' })
 })
-// setAssociation()
 
-// console.log(md5('12345678'))
+setAssociation()
+
+console.log(md5('12345678'))
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/api/v1/users', userRouter)
+app.use('/api/v1/orders', orderRouter)
+app.use('/api/v1/categories', categoryRouter)
+app.use('/api/v1/comments', commentRouter)
 
 const port = 8080
 

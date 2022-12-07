@@ -16,7 +16,7 @@ const Product = connection.define(
     price: {
       type: DataTypes.INTEGER,
     },
-    sale_price: {
+    salePrice: {
       type: DataTypes.INTEGER,
     },
     color: {

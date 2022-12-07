@@ -2,7 +2,6 @@ const { Op } = require('sequelize')
 const md5 = require('md5')
 const User = require('../Models/User')
 const { sign } = require('jsonwebtoken')
-const Role = require('../Models/Role')
 require('dotenv').config()
 const { verify } = require('jsonwebtoken')
 
@@ -24,8 +23,8 @@ const signUp = async (req, res) => {
     //create user
 
     const newUser = await User.create({
-      first_name: firstName,
-      last_name: lastName,
+      firstName: firstName,
+      lastName: lastName,
       address: address,
       email: email,
       phone: phone,
@@ -77,7 +76,11 @@ const signIn = async (req, res) => {
 
 const showAllUser = async (req, res) => {
   try {
-    const allUsers = await User.findAll({ where: { role: 1 } })
+    const allUsers = await User.findAll({
+      // limit: 3,
+      // offset: 0,
+      where: { role: 1 },
+    })
     return res.status(200).json(allUsers)
   } catch (error) {
     console.log(error)
@@ -91,8 +94,8 @@ const updateUser = async (req, res) => {
   try {
     await User.update(
       {
-        first_name: firstName,
-        last_name: lastName,
+        firstName: firstName,
+        lastName: lastName,
         address: address,
         email: email,
         phone: phone,
@@ -128,10 +131,10 @@ const searchUser = async (req, res) => {
     const searchUserResults = await User.findAll({
       where: {
         [Op.or]: [
-          { first_name: keyword },
-          { last_name: keyword },
+          { firstName: keyword },
+          { lastName: keyword },
           {
-            [Op.and]: [{ first_name: keyword }, { last_name: keyword }],
+            [Op.and]: [{ firstName: keyword }, { lastName: keyword }],
           },
         ],
       },
@@ -163,8 +166,8 @@ const validateToken = async (req, res) => {
     const currentUser = await User.findOne({
       attributes: [
         'id',
-        'first_name',
-        'last_name',
+        'firstName',
+        'lastName',
         'role',
         'address',
         'email',

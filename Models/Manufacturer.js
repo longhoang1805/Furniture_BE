@@ -10,7 +10,7 @@ const Manufacturer = connection.define(
       allowNull: false,
       autoIncrement: true,
     },
-    manufacturer_name: {
+    manufacturerName: {
       type: DataTypes.STRING,
     },
   },

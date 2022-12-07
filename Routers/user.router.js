@@ -11,11 +11,9 @@ router.post('/signin', userController.signIn)
 router.get('/token', userController.validateToken)
 
 //Admin side
-// router.get('/', verifyToken, isAdmin, userController.showAllUser)
-router.get('/', userController.showAllUser)
+router.get('/', verifyToken, isAdmin, userController.showAllUser)
 router.get('/:id', verifyToken, isAdmin, userController.getUserById)
-// router.delete('/:id', verifyToken, isAdmin, userController.deleteUser)
-router.delete('/:id', userController.deleteUser)
+router.delete('/:id', verifyToken, isAdmin, userController.deleteUser)
 router.get('/search', verifyToken, isAdmin, userController.searchUser)
 
 //Test railway

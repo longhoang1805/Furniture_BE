@@ -10,10 +10,13 @@ const Order = connection.define(
       allowNull: false,
       autoIncrement: true,
     },
-    cancel_order: {
+    cancelOrder: {
       type: DataTypes.BOOLEAN,
     },
-    shipping_address: {
+    shippingAddress: {
+      type: DataTypes.STRING,
+    },
+    status: {
       type: DataTypes.STRING,
     },
   },

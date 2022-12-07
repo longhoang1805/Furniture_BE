@@ -1,5 +1,6 @@
 const { DataTypes, Sequelize } = require('sequelize')
 const { connection } = require('./connection')
+const Order = require('./Order')
 
 const User = connection.define(
   'User',
@@ -10,13 +11,13 @@ const User = connection.define(
       allowNull: false,
       autoIncrement: true,
     },
-    first_name: {
+    firstName: {
       type: DataTypes.STRING,
       validate: {
         len: [3, 25],
       },
     },
-    last_name: {
+    lastName: {
       type: DataTypes.STRING,
       validate: {
         len: [3, 25],
