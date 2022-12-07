@@ -31,7 +31,7 @@ const deleteComment = async (req, res) => {
 }
 
 const searchComment = async (req, res) => {
-  const keyword = req.query.keyword
+  const { keyword } = req.params
   try {
     const result = await CommentProduct.findAll({
       where: {

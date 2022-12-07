@@ -15,4 +15,12 @@ router.post('/create', orderController.createOder)
 //delete order
 router.delete('/:id', verifyToken, isAdmin, orderController.deleteOrder)
 
+//search order
+router.get(
+  '/search/:keyword',
+  verifyToken,
+  isAdmin,
+  orderController.searchOrder
+)
+
 module.exports = router

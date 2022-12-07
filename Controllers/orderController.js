@@ -47,4 +47,22 @@ const deleteOrder = async (req, res) => {
   }
 }
 
-module.exports = { showAllOrder, deleteOrder, createOder }
+const searchOrder = async (req, res) => {
+  const { keyword } = req.params
+  try {
+    const result = await Order.findAll({
+      where: {
+        [Op.or]: [
+          { shippingAddress: { [Op.substring]: keyword } },
+          { status: { [Op.substring]: keyword } },
+        ],
+      },
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+module.exports = { showAllOrder, deleteOrder, createOder, searchOrder }

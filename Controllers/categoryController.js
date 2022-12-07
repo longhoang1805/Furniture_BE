@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const Category = require('../Models/Category')
 
 const showAllCategories = async (req, res) => {
@@ -19,4 +20,22 @@ const deleteCategory = async (req, res) => {
     return res.status(500).json({ msg: 'Server err' })
   }
 }
-module.exports = { showAllCategories, deleteCategory }
+
+const searchCategory = async (req, res) => {
+  const { keyword } = req.params
+  try {
+    const result = await Category.findAll({
+      where: {
+        type: {
+          [Op.substring]: keyword,
+        },
+      },
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+module.exports = { showAllCategories, deleteCategory, searchCategory }

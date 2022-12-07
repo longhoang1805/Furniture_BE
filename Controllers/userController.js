@@ -126,21 +126,27 @@ const deleteUser = async (req, res) => {
 
 //search have problem
 const searchUser = async (req, res) => {
-  const { keyword } = req.query
+  const { keyword } = req.params
   try {
-    const searchUserResults = await User.findAll({
+    const result = await User.findAll({
       where: {
-        [Op.or]: [
-          { firstName: keyword },
-          { lastName: keyword },
+        [Op.and]: [
+          { role: 1 },
           {
-            [Op.and]: [{ firstName: keyword }, { lastName: keyword }],
+            [Op.or]: [
+              { firstName: { [Op.substring]: keyword } },
+              { lastName: { [Op.substring]: keyword } },
+              { address: { [Op.substring]: keyword } },
+              { email: { [Op.substring]: keyword } },
+              { phone: { [Op.substring]: keyword } },
+            ],
           },
         ],
       },
     })
-    return res.status(200).json(searchUserResults)
+    return res.status(200).json(result)
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ msg: 'Server err' })
   }
 }

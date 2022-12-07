@@ -7,7 +7,15 @@ const categoryController = require('../Controllers/categoryController')
 //view all categories
 router.get('/', categoryController.showAllCategories)
 
-//delete order
+//delete category
 router.delete('/:id', verifyToken, isAdmin, categoryController.deleteCategory)
+
+//search category
+router.get(
+  '/search/:keyword',
+  verifyToken,
+  isAdmin,
+  categoryController.searchCategory
+)
 
 module.exports = router

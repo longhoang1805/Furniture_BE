@@ -10,6 +10,11 @@ router.get('/', verifyToken, isAdmin, commentController.showAllComments)
 router.delete('/:id', verifyToken, isAdmin, commentController.deleteComment)
 
 //search comment
-router.get('/search', verifyToken, isAdmin, commentController.searchComment)
+router.get(
+  '/search/:keyword',
+  verifyToken,
+  isAdmin,
+  commentController.searchComment
+)
 
 module.exports = router
