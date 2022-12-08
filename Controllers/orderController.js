@@ -57,6 +57,9 @@ const searchOrder = async (req, res) => {
           { status: { [Op.substring]: keyword } },
         ],
       },
+      include: [
+        { model: User, attributes: { exclude: ['encryptedPassword'] } },
+      ],
     })
     return res.status(200).json(result)
   } catch (error) {
