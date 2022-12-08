@@ -26,15 +26,7 @@ const deleteProduct = async (req, res) => {
 }
 
 const updateProduct = async (req, res) => {
-  const {
-    name,
-    price,
-    salePrice,
-    color,
-    description,
-    manufacturerId,
-    categoryId,
-  } = req.body
+  const { name, price, salePrice, color, description } = req.body
   const { id } = req.params
   try {
     await Product.update(
@@ -44,8 +36,6 @@ const updateProduct = async (req, res) => {
         sale_price: salePrice,
         color: color,
         description: description,
-        manufacturerId: manufacturerId,
-        categoryId: categoryId,
       },
       {
         where: {
