@@ -5,7 +5,9 @@ const Product = require('../Models/Product')
 
 const showAllProducts = async (req, res) => {
   try {
-    const allProducts = await Product.findAll({
+    const allProducts = await Product.findAndCountAll({
+      limit: parseInt(req.query.limit),
+      offset: parseInt(req.query.offset),
       include: [Category, Manufacturer],
     })
     return res.status(200).json(allProducts)

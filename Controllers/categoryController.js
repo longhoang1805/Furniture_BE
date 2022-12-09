@@ -3,7 +3,10 @@ const Category = require('../Models/Category')
 
 const showAllCategories = async (req, res) => {
   try {
-    const allCategories = await Category.findAll({})
+    const allCategories = await Category.findAndCountAll({
+      limit: parseInt(req.query.limit),
+      offset: parseInt(req.query.offset),
+    })
     return res.status(200).json(allCategories)
   } catch (error) {
     console.log(error)

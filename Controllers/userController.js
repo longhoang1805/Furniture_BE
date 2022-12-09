@@ -76,9 +76,9 @@ const signIn = async (req, res) => {
 
 const showAllUser = async (req, res) => {
   try {
-    const allUsers = await User.findAll({
-      // limit: 3,
-      // offset: 0,
+    const allUsers = await User.findAndCountAll({
+      limit: parseInt(req.query.limit),
+      offset: parseInt(req.query.offset),
       where: { role: 1 },
     })
     return res.status(200).json(allUsers)

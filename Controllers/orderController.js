@@ -5,7 +5,9 @@ const User = require('../Models/User')
 
 const showAllOrder = async (req, res) => {
   try {
-    const allOrders = await Order.findAll({
+    const allOrders = await Order.findAndCountAll({
+      limit: parseInt(req.query.limit),
+      offset: parseInt(req.query.offset),
       include: [
         { model: User, attributes: { exclude: ['encryptedPassword'] } },
       ],

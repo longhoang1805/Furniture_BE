@@ -6,7 +6,9 @@ const { Op } = require('sequelize')
 
 const showAllComments = async (req, res) => {
   try {
-    const allComments = await CommentProduct.findAll({
+    const allComments = await CommentProduct.findAndCountAll({
+      limit: parseInt(req.query.limit),
+      offset: parseInt(req.query.offset),
       include: [
         { model: User, attributes: { exclude: ['encryptedPassword'] } },
         { model: Product },
