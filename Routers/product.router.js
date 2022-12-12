@@ -5,10 +5,20 @@ const router = express.Router()
 const productController = require('../Controllers/productController')
 
 //update product
-router.put('/:id', verifyToken, isAdmin, productController.updateProduct)
+router.put('/:id', productController.upload, productController.updateProduct)
+
+//create product
+router.post(
+  '/create',
+  productController.upload,
+  productController.createProduct
+)
 
 //delete product
 router.delete('/:id', verifyToken, isAdmin, productController.deleteProduct)
+
+//get product by id
+router.get('/:productId', productController.getProductById)
 
 //search product
 router.get('/search/:keyword', productController.searchProduct)
