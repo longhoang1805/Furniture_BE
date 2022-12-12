@@ -8,9 +8,13 @@ const categoryRouter = require('./Routers/category.router')
 const commentRouter = require('./Routers/comment.router')
 const dataRouter = require('./Routers/data.router')
 const productRouter = require('./Routers/product.router')
+const manufacturerRouter = require('./Routers/manufacturer.router')
 
 var cors = require('cors')
 app.use(cors())
+
+//static Images folder
+app.use('Images', express.static('./Images'))
 
 app.get('/', (req, res) => {
   return res.status(200).json({ msg: 'Hello world!' })
@@ -33,6 +37,7 @@ app.use('/api/v1/products', productRouter)
 app.use('/api/v1/orders', orderRouter)
 app.use('/api/v1/categories', categoryRouter)
 app.use('/api/v1/comments', commentRouter)
+app.use('/api/v1/manufacturers', manufacturerRouter)
 
 app.use('/api/v1/data', dataRouter)
 
