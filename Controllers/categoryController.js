@@ -91,6 +91,7 @@ const createCategory = async (req, res) => {
     return res.status(500).json({ msg: 'Server err' })
   }
 }
+
 const updateCategory = async (req, res) => {
   const { type, parentCategoryId } = req.body
   const { id } = req.params
@@ -112,6 +113,20 @@ const updateCategory = async (req, res) => {
   }
 }
 
+const getSubCategories = async (req, res) => {
+  const { parentCategoryId } = req.params
+  try {
+    const subCategories = await Category.findAll({
+      where: {
+        categoryId: parentCategoryId,
+      },
+    })
+    return res.status(200).json(subCategories)
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
 module.exports = {
   pagingCategories,
   deleteCategory,
@@ -121,4 +136,5 @@ module.exports = {
   updateCategory,
   getCategoryById,
   showAllCategories,
+  getSubCategories,
 }

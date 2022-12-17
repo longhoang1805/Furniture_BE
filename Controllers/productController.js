@@ -1,4 +1,4 @@
-const { Op } = require('sequelize')
+const { Op, and } = require('sequelize')
 const Category = require('../Models/Category')
 const Manufacturer = require('../Models/Manufacturer')
 const Product = require('../Models/Product')
@@ -11,7 +11,7 @@ const showAllProducts = async (req, res) => {
     const allProducts = await Product.findAndCountAll({
       limit: parseInt(req.query.limit),
       offset: parseInt(req.query.offset),
-      include: [Category, Manufacturer],
+      include: [Category, Manufacturer, ImageProduct],
     })
     return res.status(200).json(allProducts)
   } catch (error) {
@@ -26,6 +26,157 @@ const getProductById = async (req, res) => {
     return res.status(200).json(productById)
   } catch (error) {
     console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const sortByPriceLowToHigh = async (req, res) => {
+  try {
+    const result = await Product.findAll({
+      order: [['salePrice', 'ASC']],
+      include: [Category, Manufacturer, ImageProduct],
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const sortByPriceHighToLow = async (req, res) => {
+  try {
+    const result = await Product.findAll({
+      order: [['salePrice', 'DESC']],
+      include: [Category, Manufacturer, ImageProduct],
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const latestProduct = async (req, res) => {
+  try {
+    const result = await Product.findAll({
+      order: [['createdAt', 'DESC']],
+      include: [Category, Manufacturer, ImageProduct],
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const getProductByManufacturerId = async (req, res) => {
+  const { manufacturerId } = req.params
+  try {
+    const result = await Product.findOne({
+      where: { manufacturerId: manufacturerId },
+      include: [Manufacturer, Category, ImageProduct],
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+const getProductByCategoryId = async (req, res) => {
+  const { categoryId } = req.params
+  try {
+    const result = await Product.findOne({
+      where: { categoryId: categoryId },
+      include: [Manufacturer, Category, ImageProduct],
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const getProductByFilter = async (req, res) => {
+  const { categoryId, manufacturerId, color } = req.body
+  try {
+    if (categoryId && manufacturerId && color) {
+      const result1 = await Product.findAll({
+        where: {
+          [Op.and]: [
+            { categoryId: categoryId },
+            { manufacturerId: manufacturerId },
+            { color: color },
+          ],
+        },
+        include: [Category, Manufacturer, ImageProduct],
+      })
+      return res.status(200).json(result1)
+    } else if (categoryId && manufacturerId) {
+      const result2 = await Product.findAll({
+        where: {
+          [Op.and]: [
+            { categoryId: categoryId },
+            { manufacturerId: manufacturerId },
+          ],
+        },
+        include: [Category, Manufacturer, ImageProduct],
+      })
+      return res.status(200).json(result2)
+    } else if (categoryId && color) {
+      const result3 = await Product.findAll({
+        where: { [Op.and]: [{ categoryId: categoryId }, { color: color }] },
+        include: [Category, Manufacturer, ImageProduct],
+      })
+      return res.status(200).json(result3)
+    } else if (manufacturerId && color) {
+      const result4 = await Product.findAll({
+        where: {
+          [Op.and]: [{ manufacturerId: manufacturerId }, { color: color }],
+        },
+        include: [Category, Manufacturer, ImageProduct],
+      })
+      return res.status(200).json(result4)
+    } else {
+      const result5 = await Product.findAll({
+        where: {
+          [Op.or]: [
+            { manufacturerId: manufacturerId },
+            { color: color },
+            { categoryId: categoryId },
+          ],
+        },
+        include: [Category, Manufacturer, ImageProduct],
+      })
+      return res.status(200).json(result5)
+    }
+  } catch (error) {
+    return res.status(200).json({ msg: 'Server err' })
+  }
+}
+
+const showProductsByColor = async (req, res) => {
+  const { color } = req.body
+  try {
+    const result = await Product.findAll({
+      where: { color: color },
+      include: [Category, Manufacturer, ImageProduct],
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const showAllColors = async (req, res) => {
+  let newResult = []
+  try {
+    const result = await Product.findAll({
+      attributes: ['color'],
+    })
+    for (var i = 0; i < result.length; i++) {
+      if (newResult.indexOf(result[i].color) === -1) {
+        newResult.push(result[i].color)
+      }
+    }
+    return res.status(200).json(newResult)
+  } catch (error) {
     return res.status(500).json({ msg: 'Server err' })
   }
 }
@@ -99,10 +250,9 @@ const searchProduct = async (req, res) => {
           { name: { [Op.substring]: keyword } },
           { salePrice: { [Op.substring]: keyword } },
           { color: { [Op.substring]: keyword } },
-          { description: { [Op.substring]: keyword } },
         ],
       },
-      include: [Manufacturer, Category],
+      include: [Manufacturer, Category, ImageProduct],
     })
     return res.status(200).json(result)
   } catch (error) {
@@ -136,20 +286,23 @@ const createProduct = async (req, res) => {
       url: req.file.path ? req.file.path : '',
       productId: newProduct.id,
     })
-    res.status(201).json({ msg: 'Product has been created successfully!' })
+    res
+      .status(200)
+      .json({ url: 'http://localhost:8080/Images/Upload/' + imageName })
   } catch (error) {
     console.log(error)
     return res.status(500).json({ msg: 'Server error' })
   }
 }
 
-//upload images controller
+let imageName = ''
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'Images/Upload')
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname))
+    imageName = Date.now() + path.extname(file.originalname)
+    cb(null, imageName)
   },
 })
 
@@ -176,4 +329,12 @@ module.exports = {
   createProduct,
   upload,
   getProductById,
+  getProductByManufacturerId,
+  showProductsByColor,
+  showAllColors,
+  getProductByCategoryId,
+  getProductByFilter,
+  sortByPriceLowToHigh,
+  sortByPriceHighToLow,
+  latestProduct,
 }

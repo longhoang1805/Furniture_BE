@@ -1,4 +1,5 @@
 const { Op } = require('sequelize')
+const nodemailer = require('nodemailer')
 const md5 = require('md5')
 const User = require('../Models/User')
 const { sign } = require('jsonwebtoken')
@@ -89,7 +90,7 @@ const showAllUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-  const { firstName, lastName, address, email, phone, password } = req.body
+  const { firstName, lastName, address, email, phone } = req.body
   const { id } = req.params
   try {
     await User.update(
@@ -99,8 +100,6 @@ const updateUser = async (req, res) => {
         address: address,
         email: email,
         phone: phone,
-        encryptedPassword: md5(password),
-        // RoleId: 1,
       },
       {
         where: {
@@ -196,6 +195,83 @@ const validateToken = async (req, res) => {
   }
 }
 
+const changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body
+  try {
+    const result = await User.findOne({
+      where: {
+        encryptedPassword: md5(currentPassword),
+      },
+    })
+    if (result) {
+      const newPass = await User.update(
+        {
+          encryptedPassword: md5(newPassword),
+        },
+        {
+          where: {
+            id: req.user.id,
+          },
+        }
+      )
+      return res.status(200).json({ msg: 'Change password successfully!' })
+    }
+    return res
+      .status(201)
+      .json({ msg: 'Current password is incorrect! Please try again' })
+  } catch (error) {
+    return res.status(200).json({ msg: 'Server error' })
+  }
+}
+
+const forgetPassword = async (req, res) => {
+  const { email } = req.body
+  const user = await User.findOne({
+    where: {
+      email: email,
+    },
+  })
+  if (!user) {
+    return res
+      .status(201)
+      .json({ msg: 'User with this email does not exists.' })
+  }
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.HOST_EMAIL_USER,
+      pass: process.env.HOST_EMAIL_PASSWORD,
+    },
+  })
+  htmlContent = `
+  <h1 style="color:">Thank you for your shopping ${email}</h1>
+  <p>This is your new password: <b> FurnitureOnlineStore123. </b></p>
+  <p>Don't share this with anyone!</p>
+  <p>------------------------------------</p>
+  <p><b>---Furniture Onile Store---</b></p>
+  `
+  //Send mail
+  try {
+    await transporter.sendMail({
+      to: email,
+      subject: 'Furniture Online Store - Reset password',
+      from: process.env.HOST_EMAIL_USER,
+      text: 'This is reset password link',
+      html: htmlContent,
+    })
+    // return res.status(200).json({ msg: 'Send email thanh cong!' })
+    await User.update(
+      {
+        encryptedPassword: md5('FurnitureOnlineStore123.'),
+      },
+      { where: { email: email } }
+    )
+    return res.status(200).json({ msg: 'Send email thanh cong!' })
+  } catch (error) {
+    res.status(500).json({ msg: 'Send mail err' })
+  }
+}
+
 module.exports = {
   signUp,
   signIn,
@@ -205,4 +281,6 @@ module.exports = {
   searchUser,
   getUserById,
   validateToken,
+  changePassword,
+  forgetPassword,
 }

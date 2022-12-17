@@ -20,6 +20,13 @@ router.delete('/:id', verifyToken, isAdmin, userController.deleteUser)
 router.get('/railway', userController.showAllUser)
 
 //Customer side
+//update customer info
 router.put('/update/:id', verifyToken, userController.updateUser)
+
+//change password
+router.put('/update-password', verifyToken, userController.changePassword)
+
+//reset password
+router.post('/forget-password', userController.forgetPassword)
 
 module.exports = router

@@ -10,4 +10,6 @@ router.get(
   manufacturerController.showAllManufacturers
 )
 
+router.get('/all', manufacturerController.showAllManufacturers)
+
 module.exports = router

@@ -4,8 +4,11 @@ const router = express.Router()
 
 const categoryController = require('../Controllers/categoryController')
 
-//view all categories pagination
-router.get('/', verifyToken, isAdmin, categoryController.pagingCategories)
+//view all categories
+router.get('/all', categoryController.showAllCategories)
+
+//view categories by parentCategoryId
+router.get('/:parentCategoryId', categoryController.getSubCategories)
 
 //view all parents categories
 router.get(
@@ -14,9 +17,6 @@ router.get(
   isAdmin,
   categoryController.showParentCategories
 )
-
-//view all categories
-router.get('/all', verifyToken, isAdmin, categoryController.showAllCategories)
 
 //view category by id
 router.get('/:id', verifyToken, isAdmin, categoryController.getCategoryById)
@@ -37,5 +37,8 @@ router.get(
   isAdmin,
   categoryController.searchCategory
 )
+
+//view all categories pagination
+router.get('/', verifyToken, isAdmin, categoryController.pagingCategories)
 
 module.exports = router

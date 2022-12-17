@@ -11,10 +11,11 @@ const productRouter = require('./Routers/product.router')
 const manufacturerRouter = require('./Routers/manufacturer.router')
 
 var cors = require('cors')
+var path = require('path')
 app.use(cors())
 
 //static Images folder
-app.use('Images', express.static('./Images'))
+app.use('/Images', express.static(path.join(__dirname, 'Images')))
 
 app.get('/', (req, res) => {
   return res.status(200).json({ msg: 'Hello world!' })
