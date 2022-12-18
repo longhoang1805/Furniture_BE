@@ -2,6 +2,8 @@ const express = require('express')
 const md5 = require('md5')
 const setAssociation = require('./Models/association')
 const app = express()
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUi = require('swagger-ui-express')
 const userRouter = require('./Routers/user.router')
 const orderRouter = require('./Routers/order.router')
 const categoryRouter = require('./Routers/category.router')
@@ -33,6 +35,41 @@ console.log(md5('12345678'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: 'API',
+      description: 'API infomation',
+      contact: {
+        name: 'Amazing developer',
+      },
+      servers: ['http://localhost:8080'],
+    },
+  },
+  apis: ['.Routers/*.js', 'index.js', './Routers/user.router.js'],
+}
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
+// Routes
+/**
+ * @swagger
+ * /test-swagger:
+ *  get:
+ *    description: test
+ *    response:
+ *      '200':
+ *        description: A successful response
+ */
+app.get('/test-swagger', (req, res) => {
+  res.status(200).send('Oke')
+})
+
+/**
+ * @swagger
+ * /api/v1/users
+ */
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/products', productRouter)
 app.use('/api/v1/orders', orderRouter)
