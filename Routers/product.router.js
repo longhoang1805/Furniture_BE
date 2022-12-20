@@ -7,6 +7,9 @@ const productController = require('../Controllers/productController')
 //show all product colors
 router.get('/all-colors', productController.showAllColors)
 
+//show related products
+router.post('/related-products', productController.relatedProducts)
+
 //sort products by price low to high
 router.get('/price-low-to-high', productController.sortByPriceLowToHigh)
 

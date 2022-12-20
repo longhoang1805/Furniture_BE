@@ -11,6 +11,7 @@ const commentRouter = require('./Routers/comment.router')
 const dataRouter = require('./Routers/data.router')
 const productRouter = require('./Routers/product.router')
 const manufacturerRouter = require('./Routers/manufacturer.router')
+const stripeRouter = require('./Routers/stripe.router')
 
 var cors = require('cors')
 var path = require('path')
@@ -76,6 +77,7 @@ app.use('/api/v1/orders', orderRouter)
 app.use('/api/v1/categories', categoryRouter)
 app.use('/api/v1/comments', commentRouter)
 app.use('/api/v1/manufacturers', manufacturerRouter)
+app.use('/api/v1/stripe', stripeRouter)
 
 app.use('/api/v1/data', dataRouter)
 

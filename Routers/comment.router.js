@@ -3,12 +3,6 @@ const { verifyToken, isAdmin } = require('../Middleware/verifyToken')
 const router = express.Router()
 const commentController = require('../Controllers/commentController')
 
-//view all comments
-router.get('/', verifyToken, isAdmin, commentController.showAllComments)
-
-//delete comment
-router.delete('/:id', verifyToken, isAdmin, commentController.deleteComment)
-
 //search comment
 router.get(
   '/search/:keyword',
@@ -16,5 +10,13 @@ router.get(
   isAdmin,
   commentController.searchComment
 )
+//view all comments
+router.get('/', commentController.showAllComments)
+
+//view by productId
+router.get('/:productId', commentController.getByProductId)
+
+//delete comment
+router.delete('/:id', verifyToken, isAdmin, commentController.deleteComment)
 
 module.exports = router
