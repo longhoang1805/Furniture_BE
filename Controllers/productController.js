@@ -1,10 +1,12 @@
 const { Op, and } = require('sequelize')
 const Category = require('../Models/Category')
 const Manufacturer = require('../Models/Manufacturer')
+const CommentProduct = require('../Models/CommentProduct')
 const Product = require('../Models/Product')
 const multer = require('multer')
 const path = require('path')
 const ImageProduct = require('../Models/ImageProduct')
+const User = require('../Models/User')
 
 const showAllProducts = async (req, res) => {
   try {
@@ -22,7 +24,11 @@ const showAllProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   const { productId } = req.params
   try {
-    const productById = await Product.findOne({ where: { id: productId } })
+    const productById = await Product.findOne({
+      where: { id: productId },
+      include: [Category, Manufacturer, ImageProduct],
+    })
+
     return res.status(200).json(productById)
   } catch (error) {
     console.log(error)
@@ -181,6 +187,25 @@ const showAllColors = async (req, res) => {
   }
 }
 
+const relatedProducts = async (req, res) => {
+  const { categoryId, manufacturerId } = req.body
+  try {
+    const result = await Product.findAll({
+      where: {
+        [Op.or]: [
+          { categoryId: categoryId },
+          { manufacturerId: manufacturerId },
+        ],
+      },
+      include: [Category, Manufacturer, ImageProduct],
+      order: [['createdAt', 'DESC']],
+    })
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
 const deleteProduct = async (req, res) => {
   const { id } = req.params
   try {
@@ -253,6 +278,7 @@ const searchProduct = async (req, res) => {
         ],
       },
       include: [Manufacturer, Category, ImageProduct],
+      order: [['salePrice', 'ASC']],
     })
     return res.status(200).json(result)
   } catch (error) {
@@ -337,4 +363,5 @@ module.exports = {
   sortByPriceLowToHigh,
   sortByPriceHighToLow,
   latestProduct,
+  relatedProducts,
 }

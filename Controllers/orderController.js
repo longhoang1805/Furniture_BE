@@ -20,19 +20,19 @@ const showAllOrder = async (req, res) => {
   }
 }
 const createOder = async (req, res) => {
-  const { cancelOrder, shippingAddress, status, userId } = req.body
+  const { shippingAddress, userId } = req.body
   try {
     await Order.findOrCreate({
       where: {
         userId: userId,
       },
       defaults: {
-        cancelOrder: cancelOrder,
+        cancelOrder: 0,
         shippingAddress: shippingAddress,
-        status: status,
+        status: 'Pending',
       },
     })
-    res.status(201).json({ msg: 'Order has been created successfully!' })
+    return res.status(201).json({ msg: 'Order has been created successfully!' })
   } catch (error) {
     console.log(error)
     return res.status(500).json({ msg: 'Server error' })

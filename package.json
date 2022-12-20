@@ -21,6 +21,7 @@
     "nodemailer": "^6.8.0",
     "nodemon": "^2.0.20",
     "sequelize": "^6.24.0",
+    "stripe": "^11.4.0",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.6.0"
   }

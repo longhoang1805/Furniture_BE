@@ -21,6 +21,21 @@ const showAllComments = async (req, res) => {
     return res.status(500).json({ msg: 'Server err' })
   }
 }
+const getByProductId = async (req, res) => {
+  const { productId } = req.params
+  try {
+    const allComments = await CommentProduct.findAll({
+      where: {
+        productId: productId,
+      },
+      include: [{ model: User, attributes: ['firstName', 'lastName'] }],
+    })
+    return res.status(200).json(allComments)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
 
 const deleteComment = async (req, res) => {
   const { id } = req.params
@@ -53,4 +68,9 @@ const searchComment = async (req, res) => {
   }
 }
 
-module.exports = { showAllComments, deleteComment, searchComment }
+module.exports = {
+  showAllComments,
+  deleteComment,
+  searchComment,
+  getByProductId,
+}
