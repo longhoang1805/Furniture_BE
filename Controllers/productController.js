@@ -248,13 +248,13 @@ const updateProduct = async (req, res) => {
 
     if (!result) {
       await ImageProduct.create({
-        url: req.file.path ? req.file.path : '',
+        url: req.file && req.file.path,
         productId: id,
       })
     } else {
       await ImageProduct.update(
         {
-          url: req.file.path ? req.file.path : '',
+          url: req.file && req.file.path,
         },
         { where: { productId: id } }
       )

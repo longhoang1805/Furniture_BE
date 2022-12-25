@@ -4,8 +4,14 @@ const router = express.Router()
 
 const orderController = require('../Controllers/orderController')
 
-//view all orders
-router.get('/', orderController.showAllOrder)
+//order details by orderId
+router.get('/order-detail/:orderId', orderController.getOrderDetail)
+
+//update status by orderId
+router.put('/order-status/:orderId', orderController.updateStatus)
+
+//update cancel order by orderId
+router.put('/cancel-status/:orderId', orderController.updateCancelOrder)
 
 //create order
 router.post('/create', orderController.createOder)
@@ -22,5 +28,15 @@ router.get(
   isAdmin,
   orderController.searchOrder
 )
+//view all orders
+router.get(
+  '/dashboard',
+  // verifyToken,
+  // isAdmin,
+  orderController.showDashboardOrder
+)
+
+//view all orders
+router.get('/', orderController.showAllOrder)
 
 module.exports = router

@@ -11,6 +11,9 @@ router.get(
   commentController.searchComment
 )
 //view all comments
+router.post('/create', verifyToken, commentController.createComment)
+
+//view all comments
 router.get('/', commentController.showAllComments)
 
 //view by productId

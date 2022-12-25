@@ -26,6 +26,7 @@ const verifyToken = async (req, res, next) => {
     //not exist
     return res.status(403).json({ msg: 'Forbidden!' })
   } catch (error) {
+    console.log(error)
     return res.status(401).json({ msg: 'Token is not valid' })
   }
 }

@@ -7,8 +7,11 @@ const categoryController = require('../Controllers/categoryController')
 //view all categories
 router.get('/all', categoryController.showAllCategories)
 
+//update category
+router.put('/:id', verifyToken, isAdmin, categoryController.updateCategory)
+
 //view categories by parentCategoryId
-router.get('/:parentCategoryId', categoryController.getSubCategories)
+router.get('/parent/:parentCategoryId', categoryController.getSubCategories)
 
 //view all parents categories
 router.get(
@@ -23,9 +26,6 @@ router.get('/:id', verifyToken, isAdmin, categoryController.getCategoryById)
 
 //create category
 router.post('/create', categoryController.createCategory)
-
-//update category
-router.put('/:id', categoryController.updateCategory)
 
 //delete category
 router.delete('/:id', verifyToken, isAdmin, categoryController.deleteCategory)

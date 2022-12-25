@@ -31,7 +31,7 @@ const signUp = async (req, res) => {
       phone: phone,
       encryptedPassword: md5(password),
     })
-    res.status(201).json({ msg: 'User has been created successfully!' })
+    return res.status(201).json({ msg: 'User has been created successfully!' })
   } catch (error) {
     console.log(error)
     return res.status(500).json({ msg: 'Server error' })
@@ -90,7 +90,7 @@ const showAllUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-  const { firstName, lastName, address, email, phone } = req.body
+  const { firstName, lastName, address, phone } = req.body
   const { id } = req.params
   try {
     await User.update(
@@ -98,7 +98,6 @@ const updateUser = async (req, res) => {
         firstName: firstName,
         lastName: lastName,
         address: address,
-        email: email,
         phone: phone,
       },
       {
@@ -107,7 +106,21 @@ const updateUser = async (req, res) => {
         },
       }
     )
-    res.status(200).json({ msg: 'User has been updated successfully!' })
+    const updatedUser = await User.findOne({
+      where: { id: id },
+      attributes: [
+        'id',
+        'firstName',
+        'lastName',
+        'role',
+        'address',
+        'email',
+        'phone',
+      ],
+    })
+    return res
+      .status(200)
+      .json({ msg: 'User has been updated successfully!', updatedUser })
   } catch (error) {
     return res.status(500).json({ msg: 'Server err when update user' })
   }
@@ -200,7 +213,10 @@ const changePassword = async (req, res) => {
   try {
     const result = await User.findOne({
       where: {
-        encryptedPassword: md5(currentPassword),
+        [Op.and]: [
+          { id: req.user.id },
+          { encryptedPassword: md5(currentPassword) },
+        ],
       },
     })
     if (result) {

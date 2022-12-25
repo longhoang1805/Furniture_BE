@@ -1,7 +1,12 @@
-const { Op } = require('sequelize')
+const { Op, or } = require('sequelize')
 const md5 = require('md5')
 const Order = require('../Models/Order')
 const User = require('../Models/User')
+const Product = require('../Models/Product')
+const OrderDetail = require('../Models/OrderDetail')
+const Payment = require('../Models/Payment')
+const PaymentMethod = require('../Models/PaymentMethod')
+const ImageProduct = require('../Models/ImageProduct')
 
 const showAllOrder = async (req, res) => {
   try {
@@ -12,6 +17,34 @@ const showAllOrder = async (req, res) => {
         { model: User, attributes: { exclude: ['encryptedPassword'] } },
       ],
       order: [['createdAt', 'DESC']],
+    })
+    return res.status(200).json(allOrders)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const showDashboardOrder = async (req, res) => {
+  try {
+    const allOrders = await Order.findAll({
+      include: [User],
+      order: [['createdAt', 'DESC']],
+    })
+
+    // handle each month
+    // const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    // let dataChart =[]
+    allOrders.forEach((order) => {
+      // months.forEach(mo => {
+      //   if (new Date(order.createdAt).getMonth() + 1 === mo) {
+      //     dataChart.push({
+      //       id: order.id,
+      //       month: mo,
+      //     })
+      //   }
+      // })
+      // await Order.findAndCountAll({where: {c}})
     })
     return res.status(200).json(allOrders)
   } catch (error) {
@@ -70,4 +103,89 @@ const searchOrder = async (req, res) => {
   }
 }
 
-module.exports = { showAllOrder, deleteOrder, createOder, searchOrder }
+const getOrderDetail = async (req, res) => {
+  const { orderId } = req.params
+  try {
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'firstName', 'lastName', 'email', 'phone'],
+        },
+      ],
+    })
+    const orderDetail = await OrderDetail.findAll({
+      where: {
+        orderId: orderId,
+      },
+      attributes: ['quantity'],
+      include: [{ model: Product, attributes: ['name', 'salePrice', 'id'] }],
+    })
+
+    const arrOrderDetail = []
+    orderDetail.forEach(async (detail) => {
+      const img = await ImageProduct.findOne({
+        attributes: ['url'],
+        where: { productId: detail.Product.id },
+      })
+      arrOrderDetail.push({
+        quantity: detail.quantity,
+        Product: {
+          name: detail.Product.name,
+          salePrice: detail.Product.salePrice,
+          id: detail.Product.id,
+          imageUrl: img.url,
+        },
+      })
+    })
+
+    const payment = await Payment.findOne({
+      where: {
+        orderId: orderId,
+      },
+      attributes: ['id', 'totalPrice'],
+      include: [{ model: PaymentMethod, attributes: ['method'] }],
+    })
+    return res
+      .status(200)
+      .json({ order, payment: payment, orderDetail: arrOrderDetail })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const updateStatus = async (req, res) => {
+  const { orderId } = req.params
+  const { status } = req.body
+  try {
+    await Order.update({ status: status }, { where: { id: orderId } })
+    return res.status(200).json({ msg: 'Update status order successfully!' })
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+const updateCancelOrder = async (req, res) => {
+  const { orderId } = req.params
+  try {
+    await Order.update({ cancelOrder: 1 }, { where: { id: orderId } })
+    return res.status(200).json({ msg: 'Order canceled successfully' })
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
+module.exports = {
+  showAllOrder,
+  deleteOrder,
+  createOder,
+  searchOrder,
+  getOrderDetail,
+  updateStatus,
+  updateCancelOrder,
+  showDashboardOrder,
+}

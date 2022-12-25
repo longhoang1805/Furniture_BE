@@ -6,8 +6,7 @@ const pagingCategories = async (req, res) => {
     const allCategories = await Category.findAndCountAll({
       limit: parseInt(req.query.limit),
       offset: parseInt(req.query.offset),
-      include: Category,
-      order: [['createdAt', 'DESC']],
+      // include: [Category],
     })
     return res.status(200).json(allCategories)
   } catch (error) {
@@ -95,11 +94,15 @@ const createCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
   const { type, parentCategoryId } = req.body
   const { id } = req.params
+  // console.log('---------------------------')
+  // console.log(type)
+  // console.log(parentCategoryId)
+  // console.log(id)
   try {
     const result = await Category.update(
       {
         type: type,
-        categoryId: parentCategoryId,
+        categoryId: +parentCategoryId === 0 ? null : parentCategoryId,
       },
       {
         where: {
@@ -109,6 +112,7 @@ const updateCategory = async (req, res) => {
     )
     return res.status(200).json(result)
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ msg: 'Server err' })
   }
 }

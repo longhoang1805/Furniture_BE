@@ -4,6 +4,8 @@ require('dotenv').config()
 const OrderDetail = require('../Models/OrderDetail')
 const Payment = require('../Models/Payment')
 const PaymentMethod = require('../Models/PaymentMethod')
+const User = require('../Models/User')
+const nodemailer = require('nodemailer')
 const stripe = Stripe(process.env.STRIPE_KEY)
 
 const checkout = async (req, res) => {
@@ -58,20 +60,48 @@ const checkSession = async (req, res) => {
       cancelOrder: 0,
       shippingAddress: shippingAddress,
       status: 'Pending',
-      userId: req.user.id
+      userId: req.user.id,
     })
-    order.forEach(async(item) => {
-     OrderDetail.create({
-      quantity: item.quantity,
-      productId: item.productId,
-      orderId: newOrder.id
-     })
+    order.forEach(async (item) => {
+      OrderDetail.create({
+        quantity: item.quantity,
+        productId: item.productId,
+        orderId: newOrder.id,
+      })
     })
-     const payment = Payment.create({
+    const payment = Payment.create({
       totalPrice: totalPrice,
       orderId: newOrder.id,
-      paymentMethodId: 1
-     })
+      paymentMethodId: 1,
+    })
+    const user = await User.findOne({
+      attributes: ['email'],
+      where: { id: req.user.id },
+    })
+    console.log(user)
+    console.log(user.email)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.HOST_EMAIL_USER,
+        pass: process.env.HOST_EMAIL_PASSWORD,
+      },
+    })
+    htmlContent = `
+    <h1 style="color:">Thank you for your shopping ${user.email}</h1>
+    <p>Thank you for your recent purchase. 
+    We are honored to gain you as a customer and hope to serve you for a long time.</p>
+    <p>------------------------------------</p>
+    <p><b>---Furniture Onile Store---</b></p>
+    `
+    await transporter.sendMail({
+      to: user.email,
+      subject: 'Furniture Online Store - Thank you',
+      from: process.env.HOST_EMAIL_USER,
+      text: 'Thank you',
+      html: htmlContent,
+    })
+    console.log('send mail thanh cong')
     return res.status(200).json({ msg: 'Order-paid' })
   } else {
     session = await stripe.checkout.sessions.expire(sessionId)
