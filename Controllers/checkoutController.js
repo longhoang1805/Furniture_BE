@@ -49,62 +49,115 @@ const checkout = async (req, res) => {
 }
 
 const checkSession = async (req, res) => {
-  const { sessionId, order, shippingAddress, totalPrice } = req.body
-  // console.log(req.user.id)
-  // console.log(shippingAddress)
-  let session
-  session = await stripe.checkout.sessions.retrieve(sessionId)
-  if (session.payment_status === 'paid' && session.status === 'complete') {
-    console.log(order)
-    const newOrder = await Order.create({
-      cancelOrder: 0,
-      shippingAddress: shippingAddress,
-      status: 'Pending',
-      userId: req.user.id,
-    })
-    order.forEach(async (item) => {
-      OrderDetail.create({
-        quantity: item.quantity,
-        productId: item.productId,
-        orderId: newOrder.id,
+  const { sessionId, order, shippingAddress, totalPrice, paymentMethodId } =
+    req.body
+  try {
+    if (sessionId && paymentMethodId === 1) {
+      let session
+      session = await stripe.checkout.sessions.retrieve(sessionId)
+      if (session.payment_status === 'paid' && session.status === 'complete') {
+        console.log(order)
+        const newOrder = await Order.create({
+          cancelOrder: 0,
+          shippingAddress: shippingAddress,
+          status: 'Pending',
+          userId: req.user.id,
+        })
+        order.forEach(async (item) => {
+          OrderDetail.create({
+            quantity: item.quantity,
+            productId: item.productId,
+            orderId: newOrder.id,
+          })
+        })
+        const payment = Payment.create({
+          totalPrice: totalPrice,
+          orderId: newOrder.id,
+          paymentMethodId: 1,
+        })
+        const user = await User.findOne({
+          attributes: ['email'],
+          where: { id: req.user.id },
+        })
+        console.log(user)
+        console.log(user.email)
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.HOST_EMAIL_USER,
+            pass: process.env.HOST_EMAIL_PASSWORD,
+          },
+        })
+        htmlContent = `
+      <h1 style="color:">Thank you for your shopping ${user.email}</h1>
+      <p>Thank you for your recent purchase. 
+      We are honored to gain you as a customer and hope to serve you for a long time.</p>
+      <p>------------------------------------</p>
+      <p><b>---Furniture Onile Store---</b></p>
+      `
+        await transporter.sendMail({
+          to: user.email,
+          subject: 'Furniture Online Store - Thank you',
+          from: process.env.HOST_EMAIL_USER,
+          text: 'Thank you',
+          html: htmlContent,
+        })
+        console.log('send mail thanh cong')
+        return res.status(200).json({ msg: 'Order-paid' })
+      } else {
+        session = await stripe.checkout.sessions.expire(sessionId)
+      }
+    } else if (paymentMethodId === 2) {
+      const newOrder = await Order.create({
+        cancelOrder: 0,
+        shippingAddress: shippingAddress,
+        status: 'Pending',
+        userId: req.user.id,
       })
-    })
-    const payment = Payment.create({
-      totalPrice: totalPrice,
-      orderId: newOrder.id,
-      paymentMethodId: 1,
-    })
-    const user = await User.findOne({
-      attributes: ['email'],
-      where: { id: req.user.id },
-    })
-    console.log(user)
-    console.log(user.email)
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.HOST_EMAIL_USER,
-        pass: process.env.HOST_EMAIL_PASSWORD,
-      },
-    })
-    htmlContent = `
-    <h1 style="color:">Thank you for your shopping ${user.email}</h1>
-    <p>Thank you for your recent purchase. 
-    We are honored to gain you as a customer and hope to serve you for a long time.</p>
-    <p>------------------------------------</p>
-    <p><b>---Furniture Onile Store---</b></p>
-    `
-    await transporter.sendMail({
-      to: user.email,
-      subject: 'Furniture Online Store - Thank you',
-      from: process.env.HOST_EMAIL_USER,
-      text: 'Thank you',
-      html: htmlContent,
-    })
-    console.log('send mail thanh cong')
-    return res.status(200).json({ msg: 'Order-paid' })
-  } else {
-    session = await stripe.checkout.sessions.expire(sessionId)
+      order.forEach(async (item) => {
+        OrderDetail.create({
+          quantity: item.quantity,
+          productId: item.productId,
+          orderId: newOrder.id,
+        })
+      })
+      const payment = Payment.create({
+        totalPrice: totalPrice,
+        orderId: newOrder.id,
+        paymentMethodId: 2,
+      })
+      const user = await User.findOne({
+        attributes: ['email'],
+        where: { id: req.user.id },
+      })
+      console.log(user)
+      console.log(user.email)
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.HOST_EMAIL_USER,
+          pass: process.env.HOST_EMAIL_PASSWORD,
+        },
+      })
+      htmlContent = `
+      <h1 style="color:">Thank you for your shopping ${user.email}</h1>
+      <p>Thank you for your recent purchase. 
+      We are honored to gain you as a customer and hope to serve you for a long time.</p>
+      <p>------------------------------------</p>
+      <p><b>---Furniture Onile Store---</b></p>
+      `
+      await transporter.sendMail({
+        to: user.email,
+        subject: 'Furniture Online Store - Thank you',
+        from: process.env.HOST_EMAIL_USER,
+        text: 'Thank you',
+        html: htmlContent,
+      })
+      console.log('send mail thanh cong')
+      return res.status(200).json({ msg: 'COD - Pay when received product' })
+    }
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
   }
 }
 module.exports = { checkout, checkSession }

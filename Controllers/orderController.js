@@ -158,6 +158,140 @@ const getOrderDetail = async (req, res) => {
   }
 }
 
+const getPendingOrdersByUserId = async (req, res) => {
+  // const { userId } = req.params
+  try {
+    const userOrder = await Order.findOne({ where: { userId: req.user.id } })
+    if (userOrder) {
+      const myOrders = []
+      const pendingOrders = await Order.findAll({
+        where: {
+          [Op.and]: [
+            { userId: req.user.id },
+            { status: 'Pending' },
+            { cancelOrder: 0 },
+          ],
+        },
+        include: [
+          {
+            model: User,
+            attributes: ['firstName', 'lastName', 'email', 'phone'],
+          },
+        ],
+      })
+      // console.log(pendingOrders)
+      // pendingOrders.forEach(async (order) => {
+      //   const orderDetail = await OrderDetail.findAll({
+      //     //tra ve 1 mang
+      //     attributes: ['quantity', 'productId'],
+      //     where: { orderId: order.id },
+      //     include: ['Product'],
+      //   })
+
+      // console.log(orderDetail)
+      // console.log('---------------')
+      // orderDetail.forEach(async (orderDetail1) => {
+      //   const imageUrl = await ImageProduct.findOne({
+      //     attributes: ['url'],
+      //     where: { productId: orderDetail1.Product.id },
+      //   })
+      //   console.log(imageUrl)
+      // })
+
+      // myOrders.push({
+      //   shippingAddress: order.shippingAddress,
+      //   phoneNumber: order.User.phone,
+      //   // quantity: orderDetail.quantity,
+      //   // Product: {
+      //   //   name: orderDetail.Product.name,
+      //   //   // imageUrl: orderDetail.imageUrl.url,
+      //   // },
+      // })
+
+      //   console.log('-----------------------')
+      //   console.log(myOrders)
+      // })
+
+      if (pendingOrders.length > 0) {
+        return res.status(200).json(pendingOrders)
+      } else {
+        return res
+          .status(200)
+          .json({ msg: 'You don\t t have any pending orders ' })
+      }
+    } else {
+      return res.status(200).json({ msg: "You don't have any pending orders " })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+const getShippingOrdersByUserId = async (req, res) => {
+  // const { userId } = req.params
+  try {
+    const shippingOrders = await Order.findAll({
+      where: {
+        [Op.and]: [
+          { userId: req.user.id },
+          { status: 'Shipping' },
+          { cancelOrder: 0 },
+        ],
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['firstName', 'lastName', 'email', 'phone'],
+        },
+      ],
+    })
+    if (shippingOrders.length > 0) {
+      return res.status(200).json(shippingOrders)
+    } else {
+      return res
+        .status(200)
+        .json({ msg: "You don't have any shipping orders " })
+    }
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+const getDeliveredOrdersByUserId = async (req, res) => {
+  const { userId } = req.params
+  try {
+    const deliveredOrders = await Order.findAll({
+      where: {
+        [Op.or]: [
+          { [Op.and]: [{ userId: userId || req.user.id }, { cancelOrder: 1 }] },
+          {
+            [Op.and]: [
+              { userId: userId || req.user.id },
+              { status: 'Delivered' },
+              { cancelOrder: 0 },
+            ],
+          },
+        ],
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['firstName', 'lastName', 'email', 'phone'],
+        },
+      ],
+    })
+    if (deliveredOrders.length > 0) {
+      return res.status(200).json(deliveredOrders)
+    } else {
+      return res
+        .status(200)
+        .json({ msg: "You don't have any delivered/cancel orders " })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ msg: 'Server err' })
+  }
+}
+
 const updateStatus = async (req, res) => {
   const { orderId } = req.params
   const { status } = req.body
@@ -188,4 +322,7 @@ module.exports = {
   updateStatus,
   updateCancelOrder,
   showDashboardOrder,
+  getPendingOrdersByUserId,
+  getShippingOrdersByUserId,
+  getDeliveredOrdersByUserId,
 }

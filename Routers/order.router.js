@@ -7,6 +7,27 @@ const orderController = require('../Controllers/orderController')
 //order details by orderId
 router.get('/order-detail/:orderId', orderController.getOrderDetail)
 
+//get pending-orders by userId
+router.get(
+  '/pending-orders',
+  verifyToken,
+  orderController.getPendingOrdersByUserId
+)
+
+//get shipping-orders by userId
+router.get(
+  '/shipping-orders',
+  verifyToken,
+  orderController.getShippingOrdersByUserId
+)
+
+//get delivered-orders/cancel-orders by userId
+router.get(
+  '/delivered-cancel-orders',
+  verifyToken,
+  orderController.getDeliveredOrdersByUserId
+)
+
 //update status by orderId
 router.put('/order-status/:orderId', orderController.updateStatus)
 
