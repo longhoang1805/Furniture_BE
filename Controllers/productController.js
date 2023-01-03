@@ -144,7 +144,7 @@ const getProductByFilter = async (req, res) => {
         where: {
           [Op.or]: [
             { manufacturerId: manufacturerId },
-            { color: color },
+            { color: color === undefined ? 'White' : color },
             { categoryId: categoryId },
           ],
         },
@@ -153,6 +153,7 @@ const getProductByFilter = async (req, res) => {
       return res.status(200).json(result5)
     }
   } catch (error) {
+    console.log(error)
     return res.status(200).json({ msg: 'Server err' })
   }
 }

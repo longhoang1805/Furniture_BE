@@ -20,15 +20,15 @@ router.get('/all', manufacturerController.showAllManufacturers)
 //create manufacturer
 router.post(
   '/create',
-  verifyToken,
-  isAdmin,
+  // verifyToken,
+  // isAdmin,
   manufacturerController.createManufacturer
 )
 
 router.put(
   '/:manufacturerId',
-  verifyToken,
-  isAdmin,
+  // verifyToken,
+  // isAdmin,
   manufacturerController.updateManufacturer
 )
 

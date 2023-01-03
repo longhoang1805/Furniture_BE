@@ -81,12 +81,21 @@ const searchCategory = async (req, res) => {
 const createCategory = async (req, res) => {
   const { type, parentCategoryId } = req.body
   try {
-    const result = await Category.create({
-      type: type,
-      categoryId: parentCategoryId,
-    })
-    return res.status(200).json(result)
+    if (parentCategoryId === null) {
+      const result1 = await Category.create({
+        type: type,
+        categoryId: +parentCategoryId === 0 ? null : parentCategoryId,
+      })
+      return res.status(200).json(result1)
+    } else {
+      const result2 = await Category.create({
+        type: type,
+        categoryId: +parentCategoryId === 0 ? null : parentCategoryId,
+      })
+      return res.status(200).json(result2)
+    }
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ msg: 'Server err' })
   }
 }
