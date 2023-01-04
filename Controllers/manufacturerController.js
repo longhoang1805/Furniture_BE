@@ -1,5 +1,9 @@
 const { Op } = require('sequelize')
+const CommentProduct = require('../Models/CommentProduct')
+const ImageProduct = require('../Models/ImageProduct')
 const Manufacturer = require('../Models/Manufacturer')
+const OrderDetail = require('../Models/OrderDetail')
+const Product = require('../Models/Product')
 
 const showAllManufacturers = async (req, res) => {
   try {
@@ -43,11 +47,20 @@ const updateManufacturer = async (req, res) => {
 const deleteManufacturer = async (req, res) => {
   const { manufacturerId } = req.params
   try {
+    const product = await Product.findOne({
+      where: { manufacturerId: manufacturerId },
+    })
+    console.log(product.id)
+    await CommentProduct.destroy({ where: { productId: product.id } })
+    await ImageProduct.destroy({ where: { productId: product.id } })
+    await OrderDetail.destroy({ where: { productId: product.id } })
+    await Product.destroy({ where: { manufacturerId: manufacturerId } })
     await Manufacturer.destroy({
       where: { id: manufacturerId },
     })
     return res.status(200).json({ msg: 'Delete manufacturer successfully!' })
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ msg: 'Server err' })
   }
 }

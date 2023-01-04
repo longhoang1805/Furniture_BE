@@ -1,5 +1,9 @@
 const { Op, where } = require('sequelize')
 const Category = require('../Models/Category')
+const CommentProduct = require('../Models/CommentProduct')
+const ImageProduct = require('../Models/ImageProduct')
+const OrderDetail = require('../Models/OrderDetail')
+const Product = require('../Models/Product')
 
 const pagingCategories = async (req, res) => {
   try {
@@ -54,9 +58,17 @@ const getCategoryById = async (req, res) => {
 const deleteCategory = async (req, res) => {
   const { id } = req.params
   try {
+    const product = await Product.findOne({ where: { categoryId: id } })
+    console.log(product.id)
+    await CommentProduct.destroy({ where: { productId: product.id } })
+    await ImageProduct.destroy({ where: { productId: product.id } })
+    await OrderDetail.destroy({ where: { productId: product.id } })
+    await Product.destroy({ where: { categoryId: id } })
+
     await Category.destroy({ where: { id: id } })
     return res.status(200).json({ msg: 'Delete category successfully!' })
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ msg: 'Server err' })
   }
 }
