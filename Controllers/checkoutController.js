@@ -141,7 +141,7 @@ const checkSession = async (req, res) => {
       })
       htmlContent = `
       <h1 style="color:">Thank you for your shopping ${user.email}</h1>
-      <p>Thank you for your recent purchase. 
+      <p>Thank you for your recent order. 
       We are honored to gain you as a customer and hope to serve you for a long time.</p>
       <p>------------------------------------</p>
       <p><b>---Furniture Onile Store---</b></p>

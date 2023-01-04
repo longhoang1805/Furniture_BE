@@ -178,6 +178,7 @@ const getPendingOrdersByUserId = async (req, res) => {
             attributes: ['firstName', 'lastName', 'email', 'phone'],
           },
         ],
+        order: [['createdAt', 'DESC']],
       })
       // console.log(pendingOrders)
       // pendingOrders.forEach(async (order) => {
@@ -244,6 +245,7 @@ const getShippingOrdersByUserId = async (req, res) => {
           attributes: ['firstName', 'lastName', 'email', 'phone'],
         },
       ],
+      order: [['createdAt', 'DESC']],
     })
     if (shippingOrders.length > 0) {
       return res.status(200).json(shippingOrders)
@@ -278,6 +280,7 @@ const getDeliveredOrdersByUserId = async (req, res) => {
           attributes: ['firstName', 'lastName', 'email', 'phone'],
         },
       ],
+      order: [['createdAt', 'DESC']],
     })
     if (deliveredOrders.length > 0) {
       return res.status(200).json(deliveredOrders)

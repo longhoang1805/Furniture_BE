@@ -5,6 +5,8 @@ const User = require('../Models/User')
 const { sign } = require('jsonwebtoken')
 require('dotenv').config()
 const { verify } = require('jsonwebtoken')
+// const crypto = require("crypto");
+const SHA256 = require('crypto-js/sha256')
 
 const signUp = async (req, res) => {
   const { firstName, lastName, address, email, phone, password } = req.body
@@ -242,6 +244,12 @@ const changePassword = async (req, res) => {
 
 const forgetPassword = async (req, res) => {
   const { email } = req.body
+  let newPass = (Math.random() + 1).toString(36)
+  console.log('random', newPass)
+
+  // let newPass2 = SHA256(newPass)
+  // console.log('SHA256', newPass2)
+
   const user = await User.findOne({
     where: {
       email: email,
@@ -261,7 +269,7 @@ const forgetPassword = async (req, res) => {
   })
   htmlContent = `
   <h1 style="color:">Thank you for your shopping ${email}</h1>
-  <p>This is your new password: <b> FurnitureOnlineStore123. </b></p>
+  <p>This is your new password: <b> ${newPass} </b></p>
   <p>Don't share this with anyone!</p>
   <p>------------------------------------</p>
   <p><b>---Furniture Onile Store---</b></p>
@@ -278,7 +286,7 @@ const forgetPassword = async (req, res) => {
     // return res.status(200).json({ msg: 'Send email thanh cong!' })
     await User.update(
       {
-        encryptedPassword: md5('FurnitureOnlineStore123.'),
+        encryptedPassword: md5(newPass),
       },
       { where: { email: email } }
     )
