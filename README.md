@@ -1,31 +1,54 @@
-# Furniture Online Store
+# Furniture Online Store - E-commerce Project
+## Configuration
+**Follow these steps to configure the project:**
 
-This is an E-commerce project
+1. Clone this project to your local machine.
 
-# How to config
+2. Set the environment variables in a .env file:
 
-- Clone this project
-- Setting your env variables
-    - DB_NAME="furniture_store"
-- Create new database with exactly like DB_NAME. For ex: furniture_store
-- For MySQL Workbench: On the toolbar, choose Server -> Data Import -> Choose Import from Self-Contained File -> Import sql file in this project. On Default Target Schema -> Create -> Type "furniture_store". After that choose Import Progress -> Start Import
-- Setting your HOST_EMAIL and HOST_PASSWORD if you want to send email to clients
-- Setting your STRIPE_KEY if you want to get API payment 
+DB_NAME="furniture_store"
+HOST_EMAIL (if you want to send email to clients)
+HOST_PASSWORD (if required for email sending)
+STRIPE_KEY (if you want to enable API payment)
 
-# How to start server
-- Type "npm i" in your terminal
-- Type "npm start" to start server
+3. Create a new database with the name specified in DB_NAME (e.g., furniture_store).
 
-# About Front-end
-- Clone Front-end here: https://github.com/hlong19it3/Furniture_FE
-- Type "npm i"
-- Type "npm start" 
+For MySQL Workbench:
 
-# Account
-- You can create Admin account with this: 
-    - email: abc@gmail.com
-    - role: 2
-    - encryptedPassword: 602a271bf46180c001e3978ef14eeaa1 (12345678)
-    - Ex: email: hlong.1805nh@gmail.com, password: 12345678
-- User account:
-    - Ex: email: hlong.1805top@gmail.com, password: 12345678
+* On the toolbar, choose Server -> Data Import -> Choose Import from Self-Contained File.
+* Import the SQL file from this project.
+* On Default Target Schema, enter "furniture_store".
+* Choose Import Progress -> Start Import.
+
+4. Starting the Server
+
+* Open your terminal and navigate to the project directory.
+* Run `npm install` to install the required dependencies.
+* Run `npm start` to start the server.
+
+**Front-end**
+
+For the front-end, you can clone the repository from [Here](https://github.com/hlong19it3/Furniture_FE).
+
+***Follow these steps to start the front-end:***
+
+* Clone the front-end repository to your local machine.
+* Open your terminal and navigate to the front-end directory.
+* Run `npm install` to install the required dependencies.
+* Run `npm start` to start the front-end.
+
+**Accounts**
+* Admin account (Example):
+
+Email: hlong.1805nh@gmail.com
+Role: Admin (Role ID: 2)
+Encrypted Password: 602a271bf46180c001e3978ef14eeaa1 (12345678)
+
+* User account (Example):
+
+Email: hlong.1805top@gmail.com
+Password: 12345678
+
+*Please note that these are example accounts. You can create and manage user accounts based on your specific requirements.*
+
+***With this project, you can easily set up and manage an online furniture store, offering an enjoyable shopping experience for your customers. Happy coding!*** 😊
