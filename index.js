@@ -24,6 +24,8 @@ app.get('/', (req, res) => {
   return res.status(200).json({ msg: 'Hello world!' })
 })
 
+console.log(md5('12345678'));
+
 app.get('/create-database', (req, res) => {
   setAssociation()
   return res.status(200).json({ msg: 'Create database successfully!' })
