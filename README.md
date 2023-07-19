@@ -29,7 +29,7 @@
 
 **Front-end**
 
-For the front-end, you can clone the repository from [Here](https://github.com/hlong19it3/Furniture_FE).
+For the front-end, you can clone the repository from [Here](https://github.com/hlong19it3/Furniture_FE). `git clone https://github.com/hlong19it3/Furniture_FE.git`
 
 ***Follow these steps to start the front-end:***
 
